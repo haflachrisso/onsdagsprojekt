@@ -16,7 +16,7 @@ InterruptIn exButton(D4);
 TS_StateTypeDef TS_State; // Based on MBED Template
 
 uint8_t percentString[25] = {0};
-uint8_t counterString[25] = {0};
+uint8_t counterString[30] = {0};
 uint8_t clickerString[25] = {0};
 uint16_t celciusString[25] = {0};
 uint16_t fahrenheitString[25] = {0};
@@ -30,11 +30,11 @@ uint8_t prev_nb_touches = 0;
 
 
 
-int counter = 1;
+float counter = 0.0;
 float temperature;
-int screenNum = 2;
+int screenNum = 1;
 
-
+//Creates the homescreen on start on the LCD
 void startScreen() {
     BSP_LCD_Clear(LCD_COLOR_DARKCYAN);
     BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
@@ -55,19 +55,7 @@ void startScreen() {
     HAL_Delay(1000);
 
 }
-
-void homeScreen() {
-    BSP_LCD_Clear(LCD_COLOR_BLACK);
-    BSP_LCD_SetFont(&LCD_MEDIUM_FONT);
-    BSP_LCD_SetBackColor(LCD_COLOR_DARKCYAN);
-    BSP_LCD_SetTextColor(LCD_COLOR_DARKCYAN);
-    BSP_LCD_DrawRect (0,0, BSP_LCD_GetXSize()-2,BSP_LCD_GetYSize()-2);
-    BSP_LCD_FillRect(0,0, BSP_LCD_GetXSize()-2,70);
-    BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-    BSP_LCD_DisplayStringAt(0, 5, (uint8_t *)"ONSDAGS PROJEKT", CENTER_MODE);
-    //BSP_LCD_DisplayStringAt(0, 100, (uint8_t *)percentString, CENTER_MODE);
-}
-
+//Updates the counter on the LCD
 void updateCounter() {
     BSP_LCD_SetFont(&LCD_XSMALL_FONT);
     BSP_LCD_SetBackColor(LCD_COLOR_DARKCYAN);
@@ -76,17 +64,22 @@ void updateCounter() {
 
 }
 
+
+//Updates the click counter on the LCD
 void updateClickCounter() {
     BSP_LCD_SetFont(&LCD_XSMALL_FONT);
     BSP_LCD_SetBackColor(LCD_COLOR_DARKCYAN);
     BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
     BSP_LCD_DisplayStringAt(20, 50, (uint8_t *)clickerString, RIGHT_MODE);
 }
-
+//Updates the power percentage on the LCD
 void updatePercentString() {
     BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
     BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
-    BSP_LCD_DisplayStringAt(0, 100, (uint8_t *)"POWER", CENTER_MODE);
+    BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+    BSP_LCD_DisplayStringAt(0, 90, (uint8_t *)"POWER", CENTER_MODE);
+
+    //Changes color based on percentage
     if(ain > 0.49 && ain < 0.70) {
         BSP_LCD_SetTextColor(LCD_COLOR_YELLOW);
     } else if(ain > 0.69 && ain < 0.90) {
@@ -97,31 +90,55 @@ void updatePercentString() {
         BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
     }
        BSP_LCD_SetFont(&LCD_MEDIUM_FONT);
-    //BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-    BSP_LCD_DisplayStringAt(0, 160, (uint8_t *)percentString, CENTER_MODE);
+    BSP_LCD_DisplayStringAt(0, 150, (uint8_t *)percentString, CENTER_MODE);
 }
+
+//Updates the temperature on the LCD
 void updateTemperature() {
     BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
     BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
-    BSP_LCD_DisplayStringAt(0, 100, (uint8_t *)"TEMPERATURE", CENTER_MODE);
+    BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+    BSP_LCD_DisplayStringAt(0, 80, (uint8_t *)"TEMPERATURE", CENTER_MODE);
     BSP_LCD_SetFont(&LCD_MEDIUM_FONT);
-    BSP_LCD_DisplayStringAt(0, 140, (uint8_t *)celciusString, CENTER_MODE);
-    BSP_LCD_DisplayStringAt(0, 160, (uint8_t *)fahrenheitString, CENTER_MODE);
-    BSP_LCD_DisplayStringAt(0, 180, (uint8_t *)kelvinString, CENTER_MODE);
+    BSP_LCD_DisplayStringAt(0, 120, (uint8_t *)celciusString, CENTER_MODE);
+    BSP_LCD_DisplayStringAt(0, 140, (uint8_t *)fahrenheitString, CENTER_MODE);
+    BSP_LCD_DisplayStringAt(0, 160, (uint8_t *)kelvinString, CENTER_MODE);
 }
 
+//Updates the menubuttons on the LCD
 void updateMenuButtons() {
     BSP_LCD_SetFont(&LCD_SMALL_FONT);
     BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
-    BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
-    BSP_LCD_DrawRect (20,BSP_LCD_GetYSize()-65, 120,60);
-        //BSP_LCD_FillRect(0,0, BSP_LCD_GetXSize()-2,70);
+    BSP_LCD_SetTextColor(LCD_COLOR_DARKCYAN);
+    BSP_LCD_DrawRect(20,BSP_LCD_GetYSize()-65, 180,50);
+    BSP_LCD_DrawRect(BSP_LCD_GetXSize()-200,BSP_LCD_GetYSize()-65, 180,50);
+    switch(screenNum) {
+        case 1:
+            BSP_LCD_FillRect (20,BSP_LCD_GetYSize()-65, 180,50);
+            BSP_LCD_SetBackColor(LCD_COLOR_DARKCYAN);
+            BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+            BSP_LCD_DisplayStringAt(85, 225, (uint8_t *)"Power", LEFT_MODE);
+            BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+            BSP_LCD_SetTextColor(LCD_COLOR_DARKCYAN);
+            BSP_LCD_DisplayStringAt(310, 225, (uint8_t *)"Temperature", LEFT_MODE);
+            break;
+        case 2: 
+            BSP_LCD_FillRect(BSP_LCD_GetXSize()-200,BSP_LCD_GetYSize()-65, 180,50);
+            BSP_LCD_SetBackColor(LCD_COLOR_DARKCYAN);
+            BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+            BSP_LCD_DisplayStringAt(310, 225, (uint8_t *)"Temperature", LEFT_MODE);
+            BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+            BSP_LCD_SetTextColor(LCD_COLOR_DARKCYAN);
+            BSP_LCD_DisplayStringAt(85, 225, (uint8_t *)"Power", LEFT_MODE);
+    }
+
+
 }
 
 
 
 
-//Template from mbed API reference
+//Template from mbed API reference to update int on butten press
 class CheckedCount {
     public:
     CheckedCount(PinName pin) : _interrupt(pin)                     // create the InterruptIn on the pin specified to Counter
@@ -153,9 +170,11 @@ class CheckedCount {
     volatile int _count = 0;
 };
 
+//Only updates input values on the LCD
 void updateValuesOnLCD() {
     updateCounter();
     updateClickCounter();
+    updateMenuButtons();
     switch (screenNum) {
     case 1: 
         updatePercentString();
@@ -166,6 +185,18 @@ void updateValuesOnLCD() {
     }
 }
 
+//Updates the homescreen on the LCD
+void homeScreen() {
+    BSP_LCD_Clear(LCD_COLOR_BLACK);
+    BSP_LCD_SetFont(&LCD_MEDIUM_FONT);
+    BSP_LCD_SetBackColor(LCD_COLOR_DARKCYAN);
+    BSP_LCD_SetTextColor(LCD_COLOR_DARKCYAN);
+    BSP_LCD_DrawRect (0,0, BSP_LCD_GetXSize()-2,BSP_LCD_GetYSize()-2);
+    BSP_LCD_FillRect(0,0, BSP_LCD_GetXSize()-2,70);
+    BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+    BSP_LCD_DisplayStringAt(0, 5, (uint8_t *)"ONSDAGS PROJEKT", CENTER_MODE);
+    updateValuesOnLCD();
+}
 
 int main()
 {
@@ -180,24 +211,31 @@ int main()
     while (true) {
 
         temperature =  tempSensor.getTemperature();
+        
+        // *** Uncomment to show in terminal ***
         //printf("percentage: %3.3f%%\n", ain.read() * 100.0f);
         //printf("Counter: %4d\n",counter);
         //printf("Checked today: %d\n", checkedCounter.read());
         //printf("Temp: %3.3f\n", temperature);
 
+        //Creates Char arrays to shwow on LCD
         sprintf((char *) percentString, "Power: %3.0f%%", ceil(ain.read() * 100.0f));
-        sprintf((char *) counterString,"Timer: %4d",counter);
+        sprintf((char *) counterString,"Time online: %.0fsec",counter);
         sprintf((char *) clickerString,"Times checked: %4d",checkedCounter.read());
         sprintf((char *) celciusString,"%4.2fC",temperature);
         sprintf((char *) fahrenheitString,"%4.2fF",temperature*1.8+32);
         sprintf((char *) kelvinString,"%4.2fK",temperature+273.15);
+
         updateValuesOnLCD();
+
+        //Increments the counter by 1 every second
         if(counter < 9999) {
-            counter++;
+            counter+=0.25;
         } else {
             counter = 1;
         }
 
+        //Flashes LCD lights if percentage from Rotary Angle Sensor
         if (ain > 0.9f) {
             myLedD3 = !myLedD3;
             myLedD2 = !myLedD3;
@@ -205,6 +243,8 @@ int main()
             myLedD3 = 0;
             myLedD2 = 0;
         }
+
+        //Handles touch input on the display
         BSP_TS_GetState(&TS_State);
         if (TS_State.touchDetected) {
             for (idx = 0; idx < TS_State.touchDetected; idx++) {
@@ -213,8 +253,21 @@ int main()
                 printf("Touch %d: x=%d y=%d    \n", idx+1, x, y);
                 
             }
+            //Touch on click counter
             if((x >= 310 && x <= 480) && (y >= 45 && y <= 75)) {
                 checkedCounter.resetCount();
+            }
+
+            //Touch on Power Button
+            if((x >= 20 && x <= 200) && (y >= BSP_LCD_GetYSize()-65 && y <= BSP_LCD_GetYSize()-15)) {
+                screenNum = 1;
+                homeScreen();
+            }
+
+            //Touch on Temperature Button
+            if((x >= BSP_LCD_GetXSize()-200 && x <= BSP_LCD_GetXSize()-20) && (y >= BSP_LCD_GetYSize()-65 && y <= BSP_LCD_GetYSize()-15)) {
+                screenNum = 2;
+                homeScreen();
             }
         } else {
             if (!cleared) {

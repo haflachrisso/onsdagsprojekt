@@ -28,6 +28,11 @@ The premise is an embedded controller for some kind of machine, where the power 
 </ul>
 
 ## Features
+### Start Screen
+Shows version and if touchscreen is initialized. 
+
+![alt text](https://i.imgur.com/3EwO7Xi.jpg)
+
 ### Header
 Shows name of the project, an on timer and a checked counter. 
 The timer is in seconds.
@@ -39,5 +44,9 @@ Used to cycle through different screens, by touch.
 ### Power Screen
 Shows power in percentage and is controlled with the Rotary Angle Sensor. As the percentage increases, the percentage on the display changes color. If power is above 90%, peripheral LED will start flashing.
 
+![alt text](https://i.imgur.com/jAyvs2b.jpg)
+
 ### Temperature Screen
 Shows the temperature measured by the Temperature Sensor, in celcius, fahrenheit and kelvin. 
+
+![alt text](https://i.imgur.com/6w19PGP.jpg)
